@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import bcrypt from "bcrypt";
 
 const app = express();
 const port = 5500;
@@ -11,7 +12,7 @@ app.use(express.json()); // Transformar req.body a JSON
 // El id será un string ya que usaremos 'crypto.randomUUID()' para generarlo
 const users: { id: string; email: string; password: string }[] = [];
 
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
   const user = users.find((u) => u.email === email);
 
@@ -19,20 +20,37 @@ app.post("/signup", (req, res) => {
     res.status(400).send("El correo ya está registrado");
     return;
   }
+
+  const costFactor = 10;
+  const hashedPassword = await bcrypt.hash(password, costFactor);
+
   const newUser = {
     id: crypto.randomUUID(),
     email,
-    password,
+    password: hashedPassword,
   };
 
   users.push(newUser);
   res.status(201).json(newUser);
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const user = users.find((u) => u.email === email && u.password === password);
-  if (user) {
+
+  const user = users.find((u) => u.email === email);
+  if (!user) {
+    res.status(401).send("El email no existe");
+    return;
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    res.status(401).send("El password es incorrecto");
+    return;
+  }
+  
+  if (isPasswordValid) {
+    
     res.cookie("userId", user.id, { httpOnly: true });
     res.send("Login exitoso");
   } else {
