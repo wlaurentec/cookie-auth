@@ -34,6 +34,11 @@ app.post("/signup", async (req, res) => {
   res.status(201).json(newUser);
 });
 
+interface sessions {
+  [key: string]: { userId: string }; // Index signature
+}
+const sessions: sessions = {}; 
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -48,18 +53,28 @@ app.post("/login", async (req, res) => {
     res.status(401).send("El password es incorrecto");
     return;
   }
-  
+
   if (isPasswordValid) {
-    
-    res.cookie("userId", user.id, { httpOnly: true });
+    // Generamos un id de sesión
+    const sessionId = crypto.randomUUID();
+    // Guardamos el id el usuario en la sesión
+    sessions[sessionId] = { userId: user.id };
+    console.log(sessions);
+    // Guardamos el id de sesión en una cookie
+    res.cookie("sessionId", sessionId, { httpOnly: true });
     res.send("Login exitoso");
+
+    /* res.cookie("userId", user.id, { httpOnly: true });
+    res.send("Login exitoso"); */
   } else {
     res.status(401).send("Credenciales incorrectas");
   }
 });
 
 app.get("/user", (req, res) => {
-  const userId = req.cookies.userId;
+  const sessionId = req.cookies.sessionId;
+  const userId = sessions[sessionId]?.userId;
+  console.log(userId);
   const user = users.find((u) => u.id === userId);
   if (user) {
     res.json(user);
