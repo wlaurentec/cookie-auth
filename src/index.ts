@@ -35,7 +35,7 @@ app.post("/signup", async (req, res) => {
 });
 
 interface sessions {
-  [key: string]: { userId: string }; // Index signature
+  [key: string]: { userId: string }; 
 }
 const sessions: sessions = {}; 
 
@@ -59,7 +59,6 @@ app.post("/login", async (req, res) => {
     const sessionId = crypto.randomUUID();
     // Guardamos el id el usuario en la sesión
     sessions[sessionId] = { userId: user.id };
-    console.log(sessions);
     // Guardamos el id de sesión en una cookie
     res.cookie("sessionId", sessionId, { httpOnly: true });
     res.send("Login exitoso");
