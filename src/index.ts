@@ -1,5 +1,6 @@
 import express from "express";
 const morgan = require("morgan");
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 3000;
@@ -9,21 +10,13 @@ app.use(express.json());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms")
 );
+app.use(cookieParser());
 
 // Routes
 
 app.get("/", (req, res) => {
-  console.log(req.headers.cookie?.split("; "));
-
-  const cookies: Record<string, string> = {};
-  req.headers.cookie?.split("; ").forEach((cookie) => {
-    const [key, value] = cookie.split("=");
-    cookies[key] = value;
-  });
-
-  console.log(cookies);
-
-  res.send(cookies);
+   console.log(req.cookies);
+  res.send(req.cookies);
 });
 
 app.get("/set-cookie", (_req, res) => {
