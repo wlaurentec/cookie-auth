@@ -24,7 +24,7 @@ app.get("/set-cookie", (_req, res) => {
     userId: 1,
     language: "ES",
   };
-  res.cookie("preferences", cookiePreferences);
+  res.cookie("preferences", cookiePreferences, { maxAge: 20000, httpOnly: true });
   res.cookie("theme", "dark");
   res.send("Cookie seteada");
 });
