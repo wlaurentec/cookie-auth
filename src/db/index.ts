@@ -7,7 +7,7 @@ const dbConfig = {
   port: 5432,
   database: "timetracker",
   user: "postgres",
-  password: "", //Contraseña
+  password: "123456789",
 };
 const pool = new Pool(dbConfig);
 
