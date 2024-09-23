@@ -14,8 +14,8 @@ const users: { id: string; email: string; password: string }[] = [];
 
 app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
-  const user = users.find((u) => u.email === email);
 
+  const user = users.find((u) => u.email === email);
   if (user) {
     res.status(400).send("El correo ya está registrado");
     return;
@@ -86,6 +86,8 @@ app.post("/logout", (_req, res) => {
   res.clearCookie("userId");
   res.send("Logout exitoso");
 });
+
+console.log("Test");
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
